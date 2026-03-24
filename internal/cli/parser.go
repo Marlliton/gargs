@@ -49,11 +49,9 @@ func Parse(args []string) (Config, error) {
 					i = next
 					continue
 				case FlagNullDelimited:
-
 					cfg.NullDelimited = true
 					i++
 					continue
-
 				case FlagReplace:
 					value, next, err := parseStringFlag(args, i, string(flag.Name))
 					if err != nil {
@@ -62,6 +60,14 @@ func Parse(args []string) (Config, error) {
 
 					cfg.ReplaceToken = value
 					i = next
+					continue
+				case FlagPrint:
+					cfg.PrintCommands = true
+					i++
+					continue
+				case FlagNoRunIfEmpty:
+					cfg.NoRunIfEmpty = true
+					i++
 					continue
 				}
 			}

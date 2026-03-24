@@ -40,6 +40,16 @@ func Test_Parser(t *testing.T) {
 			want: Config{Command: "echo", NullDelimited: true},
 		},
 		{
+			name: "flag -t",
+			args: []string{"-t", "echo"},
+			want: Config{Command: "echo", PrintCommands: true},
+		},
+		{
+			name: "flag -r",
+			args: []string{"-r", "echo"},
+			want: Config{Command: "echo", NoRunIfEmpty: true},
+		},
+		{
 			name: "flag -I",
 			args: []string{"-I", "{}", "echo"},
 			want: Config{Command: "echo", ReplaceToken: "{}"},
