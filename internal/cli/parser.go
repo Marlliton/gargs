@@ -48,6 +48,21 @@ func Parse(args []string) (Config, error) {
 
 					i = next
 					continue
+				case FlagNullDelimited:
+
+					cfg.NullDelimited = true
+					i++
+					continue
+
+				case FlagReplace:
+					value, next, err := parseStringFlag(args, i, string(flag.Name))
+					if err != nil {
+						return cfg, err
+					}
+
+					cfg.ReplaceToken = value
+					i = next
+					continue
 				}
 			}
 		}
@@ -59,7 +74,9 @@ func Parse(args []string) (Config, error) {
 		cfg.Command = arg
 		foundCmd = true
 
-		cfg.FixedArgs = args[i+1:]
+		if len(args[i+1:]) > 0 {
+			cfg.FixedArgs = args[i+1:]
+		}
 
 		break
 	}
@@ -68,13 +85,24 @@ func Parse(args []string) (Config, error) {
 }
 
 func parseIntFlag(args []string, i int, flag string) (int, int, error) {
-	if i+1 >= len(args) {
+	targetPos := i + 1
+	if targetPos >= len(args) {
 		return 0, i, MissingValueError{Flag: flag}
 	}
-	n, err := strconv.Atoi(args[i+1])
+	n, err := strconv.Atoi(args[targetPos])
 	if err != nil {
 		return 0, i, InvalidValueError{Flag: flag}
 	}
 
-	return n, i + 2, nil
+	return n, targetPos + 1, nil
+}
+
+func parseStringFlag(args []string, i int, flag string) (string, int, error) {
+	var zero string
+	targetPos := i + 1
+	if targetPos >= len(args) {
+		return zero, i, MissingValueError{Flag: flag}
+	}
+
+	return args[targetPos], targetPos + 1, nil
 }
